@@ -5,6 +5,8 @@ import { handleInputErrors } from "../middleware/validation";
 import { validateBudgetExists, validateBudgetID } from "../middleware/budget";
 
 const router = Router();
+router.param("budgetId", validateBudgetID);
+router.param("budgetId", validateBudgetExists);
 
 router.get("/", handleInputErrors, BudgetController.getAll);
 router.post(
@@ -19,10 +21,9 @@ router.post(
         .withMessage("Amount invalid"),
     BudgetController.create,
 );
-router.get("/:id", validateBudgetID, validateBudgetExists, BudgetController.findById);
+router.get("/:budgetId", BudgetController.findById);
 router.put(
-    "/:id",
-    validateBudgetID,
+    "/:budgetId",
     body("name").notEmpty().withMessage("Name is required"),
     body("amount")
         .notEmpty()
@@ -32,9 +33,8 @@ router.put(
         .custom((value) => value > 0)
         .withMessage("Amount invalid"),
     handleInputErrors,
-    validateBudgetExists,
     BudgetController.update,
 );
-router.delete("/:id", validateBudgetID, validateBudgetExists, BudgetController.delete);
+router.delete("/:budgetId", BudgetController.delete);
 
 export default router;
