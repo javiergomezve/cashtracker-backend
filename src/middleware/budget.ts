@@ -1,5 +1,14 @@
 import type { Request, Response, NextFunction } from "express";
 import { param, validationResult } from "express-validator";
+import Budget from "../models/Budget";
+
+declare global {
+    namespace Express {
+        interface Request {
+            budget?: Budget;
+        }
+    }
+}
 
 export async function validateBudgetID(req: Request, res: Response, next: NextFunction) {
     await param("id")
@@ -16,4 +25,20 @@ export async function validateBudgetID(req: Request, res: Response, next: NextFu
     }
 
     next();
+}
+
+export async function validateBudgetExists(req: Request, res: Response, next: NextFunction) {
+    try {
+        const budget = await Budget.findByPk(req.params.id);
+        if (!budget) {
+            const error = new Error("Budget not found");
+            return res.status(404).json({ error: error.message });
+        }
+
+        req.budget = budget;
+        next();
+    } catch (e) {
+        console.error("error: ", e);
+        res.status(500).json({ error: "somenthing went wrong" });
+    }
 }

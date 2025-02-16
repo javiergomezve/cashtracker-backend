@@ -2,7 +2,7 @@ import { Router } from "express";
 import { body, param } from "express-validator";
 import { BudgetController } from "../controllers/BudgetController";
 import { handleInputErrors } from "../middleware/validation";
-import { validateBudgetID } from "../middleware/budget";
+import { validateBudgetExists, validateBudgetID } from "../middleware/budget";
 
 const router = Router();
 
@@ -19,7 +19,7 @@ router.post(
         .withMessage("Amount invalid"),
     BudgetController.create,
 );
-router.get("/:id", validateBudgetID, BudgetController.findById);
+router.get("/:id", validateBudgetID, validateBudgetExists, BudgetController.findById);
 router.put(
     "/:id",
     validateBudgetID,
@@ -32,8 +32,9 @@ router.put(
         .custom((value) => value > 0)
         .withMessage("Amount invalid"),
     handleInputErrors,
+    validateBudgetExists,
     BudgetController.update,
 );
-router.delete("/:id", validateBudgetID, BudgetController.delete);
+router.delete("/:id", validateBudgetID, validateBudgetExists, BudgetController.delete);
 
 export default router;
