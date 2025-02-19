@@ -11,7 +11,7 @@ export class ExpenseController {
             await expense.save();
             res.status(201).json("created successfully");
         } catch (error) {
-            res.status(500).json("Somenthing wet wrong");
+            res.status(500).json("Somen-thing wet wrong");
         }
     }
 

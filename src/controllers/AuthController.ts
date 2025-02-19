@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import User from "../models/User";
 import { hashPassword } from "../utils/auth";
 import { generateToken } from "../utils/token";
-import { AuthEmail } from "../emails/authEmail";
+import { AuthEmail } from "../emails/AuthEmail";
 
 export class AuthController {
     static async createAccount(req: Request, res: Response) {
@@ -30,5 +30,20 @@ export class AuthController {
             console.log(error);
             res.status(500).json({ message: "somenthing went wrong" });
         }
+    }
+
+    static async confirmAccount(req: Request, res: Response) {
+        const { token } = req.body;
+        const user = await User.findOne({ where: { token } });
+        if (!user) {
+            const error = new Error("Invalid token");
+            return res.status(401).json({ error: error.message });
+        }
+
+        user.token = "";
+        user.confirmed = true;
+        await user.save();
+
+        res.send("account confirmed");
     }
 }

@@ -14,3 +14,10 @@ authRouter.post(
     handleInputErrors,
     AuthController.createAccount,
 );
+
+authRouter.post(
+    "/confirm-account",
+    body("token").isLength({min: 6, max: 6}).withMessage("Invalid token"),
+    handleInputErrors,
+    AuthController.confirmAccount,
+);
