@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { AuthController } from "../controllers/AuthController";
-import { body } from "express-validator";
+import { body, param } from "express-validator";
 import { handleInputErrors } from "../middleware/validation";
 
 export const authRouter = Router();
@@ -17,7 +17,7 @@ authRouter.post(
 
 authRouter.post(
     "/confirm-account",
-    body("token").isLength({min: 6, max: 6}).withMessage("Invalid token"),
+    body("token").isLength({ min: 6, max: 6 }).withMessage("Invalid token"),
     handleInputErrors,
     AuthController.confirmAccount,
 );
@@ -28,4 +28,26 @@ authRouter.post(
     body("password").notEmpty().withMessage("Password required"),
     handleInputErrors,
     AuthController.login,
+);
+
+authRouter.post(
+    "/forgot-password",
+    body("email").notEmpty().withMessage("Email required"),
+    handleInputErrors,
+    AuthController.forgotPassword,
+);
+
+authRouter.post(
+    "/validate-token",
+    body("token").isLength({ min: 6, max: 6 }).withMessage("Invalid token"),
+    handleInputErrors,
+    AuthController.validateToken,
+);
+
+authRouter.post(
+    "/reset-password/:token",
+    param("token").isLength({ min: 6, max: 6 }).withMessage("Invalid token"),
+    body("password").isLength({ min: 8 }).withMessage("Invalid password"),
+    handleInputErrors,
+    AuthController.resetPasswordWithToken,
 );

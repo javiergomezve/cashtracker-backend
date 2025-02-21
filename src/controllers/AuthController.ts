@@ -62,14 +62,64 @@ export class AuthController {
             return res.status(403).json({ error: error.message });
         }
 
-        const isPasswordCorrect = await checkPassword(password, userExists.password)
+        const isPasswordCorrect = await checkPassword(password, userExists.password);
         if (!isPasswordCorrect) {
             const error = new Error("Invalid password");
             return res.status(401).json({ error: error.message });
         }
 
-        const token = generateJWT(userExists.id)
+        const token = generateJWT(userExists.id);
 
         res.send(token);
+    }
+
+    static async forgotPassword(req: Request, res: Response) {
+        const { email } = req.body;
+
+        const user = await User.findOne({ where: { email } });
+        if (!user) {
+            const error = new Error("Invalid user");
+            return res.status(400).json({ error: error.message });
+        }
+
+        user.token = generateToken();
+        await user.save();
+
+        await AuthEmail.sendResetPasswordToken({
+            email: user.email,
+            firstName: user.firstName,
+            token: user.token,
+        });
+
+        res.send("token send");
+    }
+
+    static async validateToken(req: Request, res: Response) {
+        const { token } = req.body;
+
+        const user = await User.findOne({ where: { token } });
+        if (!user) {
+            const error = new Error("Invalid token");
+            return res.status(400).json({ error: error.message });
+        }
+
+        res.send("token valid");
+    }
+
+    static async resetPasswordWithToken(req: Request, res: Response) {
+        const { token } = req.params;
+        const { password } = req.body;
+
+        const user = await User.findOne({ where: { token } });
+        if (!user) {
+            const error = new Error("Invalid token");
+            return res.status(400).json({ error: error.message });
+        }
+
+        user.password = await hashPassword(password);
+        user.token = null;
+        await user.save();
+
+        res.send("password reset successfully");
     }
 }

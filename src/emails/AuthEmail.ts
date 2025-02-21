@@ -21,4 +21,18 @@ export class AuthEmail {
             `,
         });
     }
+
+    static async sendResetPasswordToken(input: SendConfirmationEmailInput) {
+        const email = await transport.sendMail({
+            from: "CashTracker <admin@cashtracker.com>",
+            to: input.email,
+            subject: "CashTracker - Reset your password",
+            html: `
+                <p>Hello ${input.firstName}</p>
+                <p>This is your token for reset your password:
+                    <a href="#">${input.token}</a>
+                </p>
+            `,
+        });
+    }
 }
