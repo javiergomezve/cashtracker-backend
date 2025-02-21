@@ -21,3 +21,11 @@ authRouter.post(
     handleInputErrors,
     AuthController.confirmAccount,
 );
+
+authRouter.post(
+    "/login",
+    body("email").notEmpty().withMessage("Email required"),
+    body("password").notEmpty().withMessage("Password required"),
+    handleInputErrors,
+    AuthController.login,
+);

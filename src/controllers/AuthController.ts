@@ -1,8 +1,9 @@
 import type { Request, Response } from "express";
 import User from "../models/User";
-import { hashPassword } from "../utils/auth";
+import { checkPassword, hashPassword } from "../utils/auth";
 import { generateToken } from "../utils/token";
 import { AuthEmail } from "../emails/AuthEmail";
+import { generateJWT } from "../utils/jwt";
 
 export class AuthController {
     static async createAccount(req: Request, res: Response) {
@@ -45,5 +46,30 @@ export class AuthController {
         await user.save();
 
         res.send("account confirmed");
+    }
+
+    static async login(req: Request, res: Response) {
+        const { email, password } = req.body;
+
+        const userExists = await User.findOne({ where: { email } });
+        if (!userExists) {
+            const error = new Error("Invalid user");
+            return res.status(400).json({ error: error.message });
+        }
+
+        if (!userExists.confirmed) {
+            const error = new Error("Account is not confirmed");
+            return res.status(403).json({ error: error.message });
+        }
+
+        const isPasswordCorrect = await checkPassword(password, userExists.password)
+        if (!isPasswordCorrect) {
+            const error = new Error("Invalid password");
+            return res.status(401).json({ error: error.message });
+        }
+
+        const token = generateJWT(userExists.id)
+
+        res.send(token);
     }
 }
