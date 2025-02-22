@@ -65,3 +65,12 @@ export async function validateBudgetInput(req: Request, res: Response, next: Nex
 
     next();
 }
+
+export async function userHasAccessToBudget(req: Request, res: Response, next: NextFunction) {
+    if (req.budget.userId !== req.user.id) {
+        const error = new Error("Invalid action");
+        return res.status(401).json({ error: error.message });
+    }
+
+    next()
+}
