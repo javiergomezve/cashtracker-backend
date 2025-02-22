@@ -67,3 +67,11 @@ authRouter.post(
     authenticate,
     AuthController.updateCurrentUserPassword,
 );
+
+authRouter.post(
+    "/check-password",
+    body("password").notEmpty().withMessage("Invalid password"),
+    handleInputErrors,
+    authenticate,
+    AuthController.checkCurrentUserPassword,
+);

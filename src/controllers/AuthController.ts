@@ -128,8 +128,8 @@ export class AuthController {
     }
 
     static async updateCurrentUserPassword(req: Request, res: Response) {
-        const {current_password, password} = req.body;
-        const {id} = req.user;
+        const { current_password, password } = req.body;
+        const { id } = req.user;
 
         const user = await User.findByPk(id);
         const isPasswordCorrect = await checkPassword(current_password, user.password);
@@ -142,5 +142,19 @@ export class AuthController {
         await user.save();
 
         res.send("password updated successfully");
+    }
+
+    static async checkCurrentUserPassword(req: Request, res: Response) {
+        const { password } = req.body;
+        const { id } = req.user;
+
+        const user = await User.findByPk(id);
+        const isPasswordCorrect = await checkPassword(password, user.password);
+        if (!isPasswordCorrect) {
+            const error = new Error("Invalid password");
+            return res.status(400).json({ error: error.message });
+        }
+
+        res.send("correct password");
     }
 }
