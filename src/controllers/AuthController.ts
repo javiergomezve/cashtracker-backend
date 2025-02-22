@@ -126,4 +126,21 @@ export class AuthController {
     static async user(req: Request, res: Response) {
         res.json(req.user);
     }
+
+    static async updateCurrentUserPassword(req: Request, res: Response) {
+        const {current_password, password} = req.body;
+        const {id} = req.user;
+
+        const user = await User.findByPk(id);
+        const isPasswordCorrect = await checkPassword(current_password, user.password);
+        if (!isPasswordCorrect) {
+            const error = new Error("Invalid password");
+            return res.status(400).json({ error: error.message });
+        }
+
+        user.password = await hashPassword(password);
+        await user.save();
+
+        res.send("password updated successfully");
+    }
 }

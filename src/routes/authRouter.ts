@@ -55,8 +55,15 @@ authRouter.post(
 
 authRouter.get(
     "/user",
-    handleInputErrors,
     authenticate,
     AuthController.user,
 );
 
+authRouter.post(
+    "/update-password",
+    body("current_password").notEmpty().withMessage("Invalid password"),
+    body("password").isLength({ min: 8 }).withMessage("Invalid password"),
+    handleInputErrors,
+    authenticate,
+    AuthController.updateCurrentUserPassword,
+);
