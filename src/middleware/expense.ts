@@ -38,7 +38,7 @@ export async function validateExpenseExists(req: Request, res: Response, next: N
         req.expense = expense;
         next();
     } catch (e) {
-        console.error("error: ", e);
-        res.status(500).json({ error: "somenthing went wrong" });
+        // console.error("error: ", e);
+        res.status(500).json({ error: "something went wrong" });
     }
 }
