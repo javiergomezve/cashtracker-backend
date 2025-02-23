@@ -24,7 +24,7 @@ export class ExpenseController {
             await req.expense.update(req.body);
             res.json("updated successfully");
         } catch (error) {
-            res.status(500).json("Somenthing wet wrong");
+            res.status(500).json("Something went wrong");
         }
     }
 
@@ -33,7 +33,7 @@ export class ExpenseController {
             await req.expense.destroy();
             res.status(201).json("deleted successfully");
         } catch (error) {
-            res.status(500).json("Somenthing wet wrong");
+            res.status(500).json("Something went wrong");
         }
     }
 }

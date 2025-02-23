@@ -64,3 +64,46 @@ describe("ExpenseController.show", () => {
         expect(res._getJSONData()).toEqual(expenses[0]);
     });
 });
+
+describe("ExpenseController.update", () => {
+    it("should handle expense update", async () => {
+        const expenseMock = {
+            ...expenses[0],
+            update: jest.fn(),
+        };
+
+        const req = createRequest({
+            method: "PUT",
+            url: "/api/v1/budgets/:budgetId/expenses/:expenseId",
+            expense: expenseMock,
+            body: { name: "Updated expense", amount: 3000 },
+        });
+        const res = createResponse();
+        await ExpenseController.update(req, res);
+
+        expect(res.statusCode).toBe(200);
+        expect(res._getJSONData()).toEqual("updated successfully");
+        expect(expenseMock.update).toHaveBeenCalledTimes(1);
+        expect(expenseMock.update).toHaveBeenCalledWith(req.body);
+    });
+
+    it("should return statusCode 500 when expense update fails", async () => {
+        const expenseMock = {
+            ...expenses[0],
+            update: jest.fn(),
+        };
+        (expenseMock.update as jest.Mock).mockRejectedValue(new Error());
+
+        const req = createRequest({
+            method: "PUT",
+            url: "/api/v1/budgets/:budgetId/expenses/:expenseId",
+            expense: expenseMock,
+            body: { name: "Updated expense", amount: 3000 },
+        });
+        const res = createResponse();
+        await ExpenseController.update(req, res);
+
+        expect(res.statusCode).toBe(500);
+        expect(res._getJSONData()).toEqual("Something went wrong");
+    });
+});
