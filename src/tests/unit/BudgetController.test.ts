@@ -210,3 +210,27 @@ describe("BudgetController.findById", () => {
         });
     });
 });
+
+describe("BudgetController.update", () => {
+    it("should update the budget and return a success message", async () => {
+        const budgetMock = {
+            update: jest.fn().mockResolvedValue(true),
+        };
+
+        const req = createRequest({
+            method: "PUT",
+            url: "/api/v1/budgets/:budgetId",
+            budget: budgetMock,
+            body: { name: "Budget updated", amount: 4000 },
+        });
+        const res = createResponse();
+        await BudgetController.update(req, res);
+
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(200);
+        expect(data).toBe("budget updated");
+        expect(budgetMock.update).toHaveBeenCalledTimes(1);
+        expect(budgetMock.update).toHaveBeenCalledWith(req.body);
+    });
+});
