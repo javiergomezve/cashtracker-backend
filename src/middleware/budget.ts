@@ -40,8 +40,8 @@ export async function validateBudgetExists(req: Request, res: Response, next: Ne
         req.budget = budget;
         next();
     } catch (e) {
-        console.error("error: ", e);
-        res.status(500).json({ error: "somenthing went wrong" });
+        // console.error("error: ", e);
+        res.status(500).json({ error: "something went wrong" });
     }
 }
 
@@ -72,5 +72,5 @@ export async function userHasAccessToBudget(req: Request, res: Response, next: N
         return res.status(401).json({ error: error.message });
     }
 
-    next()
+    next();
 }
