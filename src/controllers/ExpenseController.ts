@@ -6,12 +6,12 @@ export class ExpenseController {
 
     static async store(req: Request, res: Response) {
         try {
-            const expense = new Expense(req.body);
+            const expense = await Expense.create(req.body);
             expense.budgetId = req.budget.id;
             await expense.save();
             res.status(201).json("created successfully");
         } catch (error) {
-            res.status(500).json("Somen-thing wet wrong");
+            res.status(500).json("Something went wrong");
         }
     }
 
