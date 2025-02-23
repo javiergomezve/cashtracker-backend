@@ -107,3 +107,43 @@ describe("ExpenseController.update", () => {
         expect(res._getJSONData()).toEqual("Something went wrong");
     });
 });
+
+describe("ExpenseController.destroy", () => {
+    it("should handle expense destroy", async () => {
+        const expenseMock = {
+            ...expenses[0],
+            destroy: jest.fn(),
+        };
+
+        const req = createRequest({
+            method: "DELETE",
+            url: "/api/v1/budgets/:budgetId/expenses/:expenseId",
+            expense: expenseMock,
+        });
+        const res = createResponse();
+        await ExpenseController.destroy(req, res);
+
+        expect(res.statusCode).toBe(204);
+        expect(res._getJSONData()).toEqual("deleted successfully");
+        expect(expenseMock.destroy).toHaveBeenCalledTimes(1);
+    });
+
+    it("should return statusCode 500 when expense destroy fails", async () => {
+        const expenseMock = {
+            ...expenses[0],
+            destroy: jest.fn(),
+        };
+        (expenseMock.destroy as jest.Mock).mockRejectedValue(new Error());
+
+        const req = createRequest({
+            method: "DELETE",
+            url: "/api/v1/budgets/:budgetId/expenses/:expenseId",
+            expense: expenseMock,
+        });
+        const res = createResponse();
+        await ExpenseController.update(req, res);
+
+        expect(res.statusCode).toBe(500);
+        expect(res._getJSONData()).toEqual("Something went wrong");
+    });
+});

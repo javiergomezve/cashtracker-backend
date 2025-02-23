@@ -31,7 +31,7 @@ export class ExpenseController {
     static async destroy(req: Request, res: Response) {
         try {
             await req.expense.destroy();
-            res.status(201).json("deleted successfully");
+            res.status(204).json("deleted successfully");
         } catch (error) {
             res.status(500).json("Something went wrong");
         }
