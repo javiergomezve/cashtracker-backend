@@ -13,7 +13,8 @@ export class BudgetController {
             });
             res.json(budgets);
         } catch (e) {
-            console.error("error: ", e);
+            // TODO: create mock
+            // console.error("error: ", e);
             res.status(500).json({ error: "somenthing went wrong" });
         }
     };
@@ -25,7 +26,8 @@ export class BudgetController {
             await budget.save();
             res.status(201).json({ message: "budget created" });
         } catch (e) {
-            console.error("error: ", e);
+            // TODO: create mock
+            // console.error("error: ", e);
             res.status(500).json({ error: "somenthing went wrong" });
         }
     };

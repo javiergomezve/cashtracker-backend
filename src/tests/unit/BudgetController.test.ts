@@ -2,10 +2,12 @@ import { budgets } from "../mocks/budgets";
 import { createRequest, createResponse } from "node-mocks-http";
 import { BudgetController } from "../../controllers/BudgetController";
 import Budget from "../../models/Budget";
+import Expense from "../../models/Expense";
 
 jest.mock("../../models/Budget", () => ({
     findAll: jest.fn(),
     create: jest.fn(),
+    findByPk: jest.fn(),
 }));
 
 describe("BudgetController.getAll", () => {
@@ -139,5 +141,72 @@ describe("BudgetController.create", () => {
         expect(res.statusCode).toBe(500);
         expect(data).toEqual({ error: "somenthing went wrong" });
         expect(mockBudget.save).not.toHaveBeenCalled();
+    });
+});
+
+describe("BudgetController.findById", () => {
+    beforeEach(() => {
+        (Budget.findByPk as jest.Mock).mockReset();
+        (Budget.findByPk as jest.Mock).mockImplementation((id) => {
+            const index = budgets.findIndex((b) => b.id === id);
+            return Promise.resolve(budgets[index]);
+        });
+    });
+
+    it("should return a budget with ID 1 & 3 expenses", async () => {
+        const req = createRequest({
+            method: "GET",
+            url: "/api/v1/budgets/:id",
+            budget: { id: 1 },
+        });
+        const res = createResponse();
+        await BudgetController.findById(req, res);
+
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(200);
+        expect(data.expenses).toHaveLength(3);
+        expect(Budget.findByPk).toHaveBeenCalledTimes(1);
+        expect(Budget.findByPk).toHaveBeenCalledWith(req.budget.id, {
+            include: [Expense],
+        });
+    });
+
+    it("should return a budget with ID 2 & 2 expenses", async () => {
+        const req = createRequest({
+            method: "GET",
+            url: "/api/v1/budgets/:id",
+            budget: { id: 2 },
+        });
+        const res = createResponse();
+        await BudgetController.findById(req, res);
+
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(200);
+        expect(data.expenses).toHaveLength(2);
+        expect(Budget.findByPk).toHaveBeenCalledTimes(1);
+        expect(Budget.findByPk).toHaveBeenCalledWith(req.budget.id, {
+            include: [Expense],
+        });
+    });
+
+    it("should return a budget with ID 3 & 0 expenses", async () => {
+        const req = createRequest({
+            method: "GET",
+            url: "/api/v1/budgets/:id",
+            budget: { id: 3 },
+        });
+        const res = createResponse();
+        await BudgetController.findById(req, res);
+
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(200);
+        expect(data.expenses).toHaveLength(0);
+        expect(Budget.findByPk).toHaveBeenCalledTimes(1);
+        expect(Budget.findByPk).toHaveBeenCalledWith(req.budget.id, {
+            include: [Expense],
+        });
     });
 });
