@@ -16,11 +16,7 @@ export class ExpenseController {
     }
 
     static async show(req: Request, res: Response) {
-        try {
-            res.json(req.expense);
-        } catch (error) {
-            res.status(500).json("Somenthing wet wrong");
-        }
+        res.json(req.expense);
     }
 
     static async update(req: Request, res: Response) {
