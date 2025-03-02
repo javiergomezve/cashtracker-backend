@@ -70,7 +70,7 @@ export class AuthController {
 
         const token = generateJWT(userExists.id);
 
-        res.send(token);
+        res.json(token);
     }
 
     static async forgotPassword(req: Request, res: Response) {
