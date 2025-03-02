@@ -15,7 +15,7 @@ export class AuthController {
         }
 
         try {
-            const user = new User(req.body);
+            const user = await User.create(req.body);
             user.password = await hashPassword(password);
             user.token = generateToken();
             await user.save();
@@ -26,7 +26,7 @@ export class AuthController {
                 token: user.token,
             });
 
-            res.json("account creted");
+            res.status(201).json("account created");
         } catch (error) {
             console.log(error);
             res.status(500).json({ message: "somenthing went wrong" });
